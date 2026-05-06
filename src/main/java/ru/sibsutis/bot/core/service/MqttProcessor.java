@@ -20,7 +20,7 @@ public class MqttProcessor {
 
     private final ExternalGateway externalGateway;
     private final ObjectMapper objectMapper;
-    private final TelegramBotService telegramBotService;
+    private final VkBotService vkBotService;
 
     @ServiceActivator(inputChannel = "mqttInboundChannel")
     public void handleVitalData(Message<String> message) {
@@ -28,10 +28,10 @@ public class MqttProcessor {
         try {
             AnalysisResult result = objectMapper.readValue(payload, AnalysisResult.class);
 
-            String tgChatId = externalGateway.getOwnerTgChatId(result.getPetId());
+            String vkChatId = externalGateway.getOwnerTgChatId(result.getPetId());
             String messageText = generateMessageText(result);
 
-            telegramBotService.sendMessage(tgChatId, messageText);
+            vkBotService.sendMessage(Long.parseLong(vkChatId), messageText);
 
             log.info("Notification sent to owner for petId: {}, anomalyType: {}",
                     result.getPetId(), result.getAnomalyType());

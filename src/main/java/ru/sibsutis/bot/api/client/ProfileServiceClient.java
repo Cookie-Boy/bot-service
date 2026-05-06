@@ -1,5 +1,6 @@
 package ru.sibsutis.bot.api.client;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,25 +11,19 @@ import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
-public class ProfileServiceClient extends BaseClient {
+@RequiredArgsConstructor
+public class ProfileServiceClient {
 
-    @Value("${service.profile.url}")
-    private String url;
-
-    @Autowired
-    public ProfileServiceClient(OAuth2AuthorizedClientManager clientManager,
-                                RestClient restClient,
-                                @Value("${service.profile.name}") String targetServiceName) {
-        super(clientManager, restClient, targetServiceName);
-    }
+    private final RestClient restClient;
+    private final TokenProvider tokenProvider;
 
     public String getOwnerTgChatId(String petId) {
         try {
-            String token = getFreshToken();
+            String token = tokenProvider.getFreshToken();
             log.info("Fresh token: {}", token);
             return restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                        .path(url)
+                        .path("api/profile/owners")
                         .queryParam("petId", petId)
                         .build())
                     .headers(httpHeaders -> httpHeaders.setBearerAuth(token))

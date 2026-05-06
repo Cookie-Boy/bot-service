@@ -10,11 +10,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExternalGateway {
 
-    private final AppointmentServiceClient appointmentClient;
     private final ProfileServiceClient profileServiceClient;
 
     public List<AppointmentResponseDto> getTgUserAppointments(String tgUserName) {
-        return appointmentClient.getTgUserAppointments(tgUserName);
+        return null;
     }
 
     public String getOwnerTgChatId(String petId) {
