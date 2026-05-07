@@ -1,19 +1,19 @@
 package ru.sibsutis.bot.core.command;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.core.model.VkMessage;
 import ru.sibsutis.bot.core.service.MessageSender;
+import ru.sibsutis.bot.core.service.VkAuthService;
 
-@Component
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class StartCommand implements BotCommand {
 
     private final MessageSender sender;
-
-    public StartCommand(MessageSender sender) {
-        this.sender = sender;
-    }
+    private final VkAuthService vkAuthService;
 
     @Override
     public String getCommandName() {
@@ -22,11 +22,23 @@ public class StartCommand implements BotCommand {
 
     @Override
     public void execute(VkMessage message) {
-        log.info("New user registered (stub): {}", message.getUserId());
-        sender.send(message.getUserId(), """
-                Привет! Я бот, который поможет тебе забронировать прием у врача.
-                Доступные команды:
-                /schedule - показать все записи
-                /book - создать новую запись""");
+        Long vkId = message.getUserId();
+        log.info("Start command from vkId={}", vkId);
+
+        if (vkAuthService.isLinked(vkId)) {
+            sender.send(vkId, """
+                    ✅ Ваш аккаунт уже привязан к платформе.
+                    Доступные команды:
+                    /schedule – показать все записи
+                    /book – создать новую запись""");
+        } else {
+            String link = vkAuthService.generateLinkToken(vkId);
+            sender.send(vkId, """
+                    Привет! Для продолжения нужно связать ваш VK аккаунт с личным кабинетом.
+                    Перейдите по ссылке и авторизуйтесь на сайте:
+                    %s
+
+                    Ссылка действительна 5 минут.""".formatted(link));
+        }
     }
 }

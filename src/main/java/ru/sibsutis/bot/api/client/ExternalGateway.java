@@ -3,6 +3,7 @@ package ru.sibsutis.bot.api.client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.api.dto.AppointmentResponseDto;
+import ru.sibsutis.bot.api.dto.OwnerDto;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class ExternalGateway {
         return null;
     }
 
-    public String getOwnerTgChatId(String petId) {
-        return profileServiceClient.getOwnerVkUserId(petId);
+    public OwnerDto getOwnerByVkUserId(Long vkUserId) {
+        return profileServiceClient.getOwnerByVkUserId(vkUserId);
     }
 }
