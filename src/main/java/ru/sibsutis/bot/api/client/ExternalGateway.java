@@ -6,6 +6,7 @@ import ru.sibsutis.bot.api.dto.AppointmentResponseDto;
 import ru.sibsutis.bot.api.dto.OwnerDto;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class ExternalGateway {
         return null;
     }
 
-    public OwnerDto getOwnerByVkUserId(Long vkUserId) {
+    public Optional<OwnerDto> getOwnerByVkUserId(Long vkUserId) {
         return profileServiceClient.getOwnerByVkUserId(vkUserId);
     }
 

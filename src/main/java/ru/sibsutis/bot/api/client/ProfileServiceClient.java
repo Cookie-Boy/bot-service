@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.sibsutis.bot.api.dto.OwnerDto;
 
+import java.util.Optional;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -15,7 +17,7 @@ public class ProfileServiceClient {
     private final RestClient restClient;
     private final TokenProvider tokenProvider;
 
-    public OwnerDto getOwnerByVkUserId(Long vkUserId) {
+    public Optional<OwnerDto> getOwnerByVkUserId(Long vkUserId) {
         try {
             String token = tokenProvider.getFreshToken();
             log.info("Fresh token: {}", token);
@@ -25,8 +27,8 @@ public class ProfileServiceClient {
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {});
         } catch (RuntimeException e) {
-            log.error("Failed to send a request to profile-service: {}", String.valueOf(e));
-            return null;
+            log.error("Error during sending a request to profile-service: {}", String.valueOf(e));
+            return Optional.empty();
         }
     }
 

@@ -31,13 +31,12 @@ public class VkAuthService {
             return true;
         }
 
-        OwnerDto owner;
-        try {
-            owner = externalGateway.getOwnerByVkUserId(vkUserId);
-        } catch (HttpClientErrorException e) {
+        Optional<OwnerDto> optOwner = externalGateway.getOwnerByVkUserId(vkUserId);
+        if (optOwner.isEmpty()) {
             return false;
         }
 
+        OwnerDto owner = optOwner.get();
         redisTemplate.opsForValue().set(cacheKey, owner.getId(), 10, TimeUnit.MINUTES);
         return true;
     }
