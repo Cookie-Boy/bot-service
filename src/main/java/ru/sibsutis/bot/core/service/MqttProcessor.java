@@ -28,10 +28,10 @@ public class MqttProcessor {
         try {
             AnalysisResult result = objectMapper.readValue(payload, AnalysisResult.class);
 
-            String vkChatId = externalGateway.getOwnerTgChatId(result.getPetId());
+            Long vkUserId = externalGateway.getOwnerVkUserId(result.getPetId());
             String messageText = generateMessageText(result);
 
-            vkMessageSender.send(Long.parseLong(vkChatId), messageText);
+            vkMessageSender.send(vkUserId, messageText);
 
             log.info("Notification sent to owner for petId: {}, anomalyType: {}",
                     result.getPetId(), result.getAnomalyType());

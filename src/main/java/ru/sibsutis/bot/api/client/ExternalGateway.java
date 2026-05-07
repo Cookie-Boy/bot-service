@@ -20,4 +20,8 @@ public class ExternalGateway {
     public OwnerDto getOwnerByVkUserId(Long vkUserId) {
         return profileServiceClient.getOwnerByVkUserId(vkUserId);
     }
+
+    public Long getOwnerVkUserId(String petId) {
+        return profileServiceClient.getOwnerVkUserId(petId);
+    }
 }

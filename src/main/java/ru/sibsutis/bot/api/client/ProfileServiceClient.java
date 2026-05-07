@@ -29,5 +29,22 @@ public class ProfileServiceClient {
             return null;
         }
     }
+
+    public Long getOwnerVkUserId(String petId) {
+        try {
+            String token = tokenProvider.getFreshToken();
+            return restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/api/profile/owner/vk-user-id")
+                            .queryParam("petId", petId)
+                            .build())
+                    .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+        } catch (RuntimeException e) {
+            log.error("Failed to send a request to profile-service (trying to fetch Vk User Id): {}", String.valueOf(e));
+            return null;
+        }
+    }
 }
 
