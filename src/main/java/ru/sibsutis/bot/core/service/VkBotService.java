@@ -6,209 +6,115 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.messages.Message;
-import com.vk.api.sdk.queries.messages.MessagesGetLongPollHistoryQuery;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.sibsutis.bot.api.client.ExternalGateway;
-import ru.sibsutis.bot.api.dto.AppointmentResponseDto;
 import ru.sibsutis.bot.configuration.VkBotConfig;
+import ru.sibsutis.bot.core.command.CommandDispatcher;
+import ru.sibsutis.bot.core.exception.GlobalExceptionHandler;
+import ru.sibsutis.bot.core.model.VkMessage;
 
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class VkBotService {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-
-    private final Map<String, String> userStorage = new ConcurrentHashMap<>();
-
     private final VkApiClient vk;
     private final GroupActor actor;
-    private final VkBotConfig config;
-    private final ExternalGateway externalGateway;
+    private final Long groupId;
+    private final Double apiVersion;
+    private final CommandDispatcher dispatcher;
+    private final GlobalExceptionHandler exceptionHandler;
 
-    private final Random random = new Random();
-
-    private final Map<String, BiConsumer<Long, String>> commandHandlers = new HashMap<>();
-
-    private final ExecutorService longPollExecutor = Executors.newSingleThreadExecutor();
     private final AtomicBoolean running = new AtomicBoolean(true);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    @Autowired
-    public VkBotService(VkBotConfig config, ExternalGateway externalGateway) {
-        this.config = config;
-        this.externalGateway = externalGateway;
+    public VkBotService(VkBotConfig config,
+                        CommandDispatcher dispatcher,
+                        GlobalExceptionHandler exceptionHandler) {
         this.vk = new VkApiClient(HttpTransportClient.getInstance());
         this.actor = new GroupActor(config.getGroupId(), config.getToken());
+        this.groupId = config.getGroupId();
+        this.apiVersion = config.getApiVersion();
+        this.dispatcher = dispatcher;
+        this.exceptionHandler = exceptionHandler;
     }
 
     @PostConstruct
-    public void init() {
-
-        log.info("Initializing VK Bot with group ID: {}", config.getGroupId());
-        commandHandlers.put("/start", this::handleStartCommand);
-        commandHandlers.put("/schedule", this::handleScheduleCommand);
-        commandHandlers.put("/book", this::handleBookCommand);
-
-        registerLongPollEvents();
-        longPollExecutor.submit(this::longPollLoop);
-        log.info("VK Bot started successfully");
+    public void start() {
+        registerSettings();
+        executor.submit(this::pollLoop);
+        log.info("Long poll started");
     }
 
     @PreDestroy
-    public void destroy() {
-        log.info("Shutting down VK Bot...");
+    public void stop() {
         running.set(false);
-        longPollExecutor.shutdownNow();
+        executor.shutdownNow();
+        log.info("Long poll stopped");
     }
 
-    private void registerLongPollEvents() {
+    private void registerSettings() {
         try {
             vk.groups().setLongPollSettings(actor)
-                    .groupId(config.getGroupId())
+                    .groupId(groupId)
                     .enabled(true)
                     .messageNew(true)
-                    .apiVersion(String.valueOf(config.getApiVersion()))
+                    .apiVersion(String.valueOf(apiVersion))
                     .execute();
-            log.info("Long Poll events registered for group {}", config.getGroupId());
         } catch (ApiException | ClientException e) {
-            log.error("Failed to register Long Poll events", e);
+            throw new RuntimeException("Cannot register long poll settings", e);
         }
     }
 
-    private void longPollLoop() {
+    private void pollLoop() {
+        Integer ts;
+        try {
+            ts = vk.messages().getLongPollServer(actor).execute().getTs();
+        } catch (Exception e) {
+            exceptionHandler.handle(e, "Getting initial long poll server");
+            return;
+        }
+
         while (running.get()) {
             try {
-                Integer ts = vk.messages().getLongPollServer(actor).execute().getTs();
-                MessagesGetLongPollHistoryQuery history = vk.messages()
-                        .getLongPollHistory(actor)
-                        .ts(ts);
-                List<Message> messages = history.execute().getMessages().getItems();
-
-                if (!messages.isEmpty()) {
-                    messages.forEach(this::handleMessageEvent);
+                var response = vk.messages().getLongPollHistory(actor)
+                        .ts(ts)
+                        .execute();
+                List<Message> messages = response.getMessages().getItems();
+                if (messages != null) {
+                    for (Message msg : messages) {
+                        processMessage(msg);
+                    }
                 }
-
-            } catch (ApiException | ClientException e) {
-                log.error("Failed to get Long Poll server params", e);
-                return;
+                ts = vk.messages().getLongPollServer(actor).execute().getTs();
+            } catch (Exception e) {
+                exceptionHandler.handle(e, "Long poll cycle");
+                sleepSafe(1_000);
+                try {
+                    ts = vk.messages().getLongPollServer(actor).execute().getTs();
+                } catch (Exception ex) {
+                    exceptionHandler.handle(ex, "Reconnect to long poll");
+                    return;
+                }
             }
         }
     }
 
-    private void handleMessageEvent(Message message) {
-        Long userId = message.getFromId();
-        String text = message.getText();
-
-        if (text != null && !text.trim().isEmpty()) {
-            String userIdStr = String.valueOf(userId);
-            userStorage.putIfAbsent(userIdStr, String.valueOf(userId));
-            processCommand(userId, text);
-        }
+    private void processMessage(Message message) {
+        dispatcher.dispatch(new VkMessage(message.getFromId(), message.getText()));
     }
 
-    private void processCommand(Long userId, String text) {
-        if (!text.startsWith("/")) {
-            sendMessage(userId, "Пожалуйста, используйте команды: /start, /schedule, /book");
-            return;
-        }
-
-        BiConsumer<Long, String> handler = commandHandlers.get(text.trim());
-        if (handler != null) {
-            handler.accept(userId, text);
-        } else {
-            sendMessage(userId, "Неизвестная команда. Доступные: /start, /schedule, /book");
-        }
-    }
-
-    public boolean sendMessage(Long userId, String text) {
+    private void sleepSafe(long millis) {
         try {
-            vk.messages().sendDeprecated(actor)
-                    .userId(userId)
-                    .message(text)
-                    .randomId(random.nextInt())
-                    .execute();
-            return true;
-        } catch (ApiException | ClientException e) {
-            log.error("Failed to send message to user with ID: {}", userId, e);
-            return false;
+            Thread.sleep(millis);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         }
-    }
-
-    private void handleStartCommand(Long userId, String text) {
-        log.info("New user registered (stub): {}", userId);
-
-        sendMessage(userId, """
-                Привет! Я бот, который поможет тебе забронировать прием у врача.
-                Доступные команды:
-                /schedule - показать все записи
-                /book - создать новую запись""");
-    }
-
-    private void handleScheduleCommand(Long userId, String text) {
-        String username = userStorage.get(userId);
-
-        if (username == null) {
-            sendMessage(userId, "Сначала зарегистрируйтесь с помощью /start");
-            return;
-        }
-
-        List<AppointmentResponseDto> appointments = externalGateway.getTgUserAppointments("@" + username);
-
-        if (appointments == null) {
-            sendMessage(userId, "Из-за технических неполадок сервис 'appointments' недоступен, ожидайте...");
-            return;
-        }
-
-        if (appointments.isEmpty()) {
-            sendMessage(userId, "У вас нет запланированных приёмов.");
-            return;
-        }
-
-        String schedule = appointments.stream()
-                .map(this::formatAppointment)
-                .collect(Collectors.joining("\n\n"));
-        sendMessage(userId, "Ваши записи:\n\n" + schedule);
-    }
-
-    private void handleBookCommand(Long userId, String text) {
-        sendMessage(userId, "Функция бронирования временно недоступна. Пожалуйста, используйте другие каналы записи.");
-    }
-
-    private String formatAppointment(AppointmentResponseDto appointment) {
-        return String.format("""
-                📅 %s в %s
-                👨⚕️ Врач: %s
-                🏥 Клиника: %s
-                🔖 Статус: %s""",
-                appointment.startTime().format(DATE_FORMATTER),
-                appointment.startTime().format(TIME_FORMATTER),
-                appointment.doctorFullName(),
-                appointment.clinicName(),
-                getStatusEmoji(appointment.status()));
-    }
-
-    private String getStatusEmoji(String status) {
-        return switch (status) {
-            case "CONFIRMED" -> "✅ Подтверждено";
-            case "PENDING" -> "⏳ Ожидает подтверждения";
-            case "CANCELLED" -> "❌ Отменено";
-            default -> "";
-        };
     }
 }

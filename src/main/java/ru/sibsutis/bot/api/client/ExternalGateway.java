@@ -17,6 +17,6 @@ public class ExternalGateway {
     }
 
     public String getOwnerTgChatId(String petId) {
-        return profileServiceClient.getOwnerTgChatId(petId);
+        return profileServiceClient.getOwnerVkUserId(petId);
     }
 }

@@ -20,7 +20,7 @@ public class MqttProcessor {
 
     private final ExternalGateway externalGateway;
     private final ObjectMapper objectMapper;
-    private final VkBotService vkBotService;
+    private final MessageSender vkMessageSender;
 
     @ServiceActivator(inputChannel = "mqttInboundChannel")
     public void handleVitalData(Message<String> message) {
@@ -31,7 +31,7 @@ public class MqttProcessor {
             String vkChatId = externalGateway.getOwnerTgChatId(result.getPetId());
             String messageText = generateMessageText(result);
 
-            vkBotService.sendMessage(Long.parseLong(vkChatId), messageText);
+            vkMessageSender.send(Long.parseLong(vkChatId), messageText);
 
             log.info("Notification sent to owner for petId: {}, anomalyType: {}",
                     result.getPetId(), result.getAnomalyType());
