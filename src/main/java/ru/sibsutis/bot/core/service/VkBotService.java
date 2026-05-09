@@ -9,6 +9,7 @@ import com.vk.api.sdk.objects.messages.Message;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.sibsutis.bot.configuration.VkBotConfig;
 import ru.sibsutis.bot.core.command.CommandDispatcher;
@@ -34,6 +35,7 @@ public class VkBotService {
     private final AtomicBoolean running = new AtomicBoolean(true);
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    @Autowired
     public VkBotService(VkBotConfig config,
                         CommandDispatcher dispatcher,
                         GlobalExceptionHandler exceptionHandler) {

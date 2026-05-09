@@ -2,6 +2,7 @@ package ru.sibsutis.bot.core.command;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.core.exception.GlobalExceptionHandler;
@@ -15,23 +16,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@RequiredArgsConstructor
 public class CommandDispatcher {
 
     private final MessageSender sender;
     private final VkAuthService vkAuthService;
-    private final Map<String, BotCommand> commands = new ConcurrentHashMap<>();
+    private final CommandList commandList;
     private final GlobalExceptionHandler exceptionHandler;
-
-    @Autowired
-    public CommandDispatcher(MessageSender sender,
-                             VkAuthService vkAuthService,
-                             GlobalExceptionHandler exceptionHandler,
-                             List<BotCommand> botCommands) {
-        this.sender = sender;
-        this.vkAuthService = vkAuthService;
-        this.exceptionHandler = exceptionHandler;
-        botCommands.forEach(cmd -> commands.put(cmd.getCommandName(), cmd));
-    }
 
     public void dispatch(VkMessage message) {
         if (!vkAuthService.isLinked(message.getUserId())) {
@@ -42,7 +33,7 @@ public class CommandDispatcher {
 
         String commandName = "/start".equals(message.getText()) ? "/start" : retrieveCommand(message.getPayload());
 
-        BotCommand cmd = commands.get(commandName);
+        BotCommand cmd = commandList.get(commandName);
         if (cmd != null) {
             try {
                 cmd.execute(message);

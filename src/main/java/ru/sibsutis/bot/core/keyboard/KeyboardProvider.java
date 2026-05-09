@@ -33,7 +33,7 @@ public class KeyboardProvider {
 
         List<KeyboardButton> line1 = new ArrayList<>();
         line1.add(createButton("Показатели", "/health"));
-        line1.add(createButton("Анализ", "/health_analyze_menu"));
+        line1.add(createButton("Анализ", "/health/analyze"));
         lines.add(line1);
 
         List<KeyboardButton> line2 = new ArrayList<>();

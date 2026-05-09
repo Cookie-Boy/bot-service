@@ -1,8 +1,9 @@
-package ru.sibsutis.bot.core.command;
+package ru.sibsutis.bot.core.command.common;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.sibsutis.bot.core.command.BotCommand;
 import ru.sibsutis.bot.core.model.VkMessage;
 import ru.sibsutis.bot.core.service.MessageSender;
 import ru.sibsutis.bot.core.service.VkAuthService;
