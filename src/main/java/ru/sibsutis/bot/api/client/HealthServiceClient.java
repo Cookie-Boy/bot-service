@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import ru.sibsutis.bot.api.dto.LatestPetResultDto;
 import ru.sibsutis.bot.api.dto.PetDto;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class HealthServiceClient {
     private final RestClient restClient;
     private final TokenProvider tokenProvider;
 
-    public List<PetDto> getLatestVitals(Long petId) {
+    public LatestPetResultDto getLatestVitals(String petId) {
         try {
             String token = tokenProvider.getFreshToken();
             return restClient.get()
