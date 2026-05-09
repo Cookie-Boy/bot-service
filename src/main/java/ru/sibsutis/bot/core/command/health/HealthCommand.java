@@ -5,16 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.api.client.ExternalGateway;
 import ru.sibsutis.bot.api.dto.LatestPetResultDto;
-import ru.sibsutis.bot.api.dto.OwnerDto;
 import ru.sibsutis.bot.api.dto.PetDto;
 import ru.sibsutis.bot.core.command.BotCommand;
-import ru.sibsutis.bot.core.keyboard.KeyboardProvider;
 import ru.sibsutis.bot.core.model.VkMessage;
 import ru.sibsutis.bot.core.service.MessageSender;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -38,7 +34,7 @@ public class HealthCommand implements BotCommand {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("❤️ **Показатели здоровья**\n\n");
+        StringBuilder sb = new StringBuilder("❤️ Показатели здоровья\n\n");
 
         for (int i = 0; i < pets.size(); i++) {
             PetDto pet = pets.get(i);
@@ -58,7 +54,7 @@ public class HealthCommand implements BotCommand {
         StringBuilder sb = new StringBuilder();
 
         // Имя и порода питомца
-        sb.append(String.format("🐶 **%s**", pet.getName()));
+        sb.append(String.format("🐶 %s", pet.getName()));
         if (pet.getBreed() != null && !pet.getBreed().isEmpty()) {
             sb.append(String.format(" (%s)", pet.getBreed()));
         }
@@ -110,7 +106,7 @@ public class HealthCommand implements BotCommand {
 
         // Общий статус аномалии
         if (Boolean.TRUE.equals(result.getIsAnomalous())) {
-            sb.append("   ⚠️ **Обнаружена аномалия!**\n");
+            sb.append("   ⚠️ Обнаружена аномалия!\n");
             String reason = result.getAnomalyReason();
             if (reason != null && !reason.equals("NORMAL") && !reason.equals("UNKNOWN")) {
                 sb.append(String.format("   Причина: %s\n", getReasonDescription(reason)));
