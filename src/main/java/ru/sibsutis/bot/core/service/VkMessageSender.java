@@ -32,7 +32,6 @@ public class VkMessageSender implements MessageSender {
                     .userId(userId)
                     .message(text)
                     .randomId(random.nextInt())
-                    .keyboard(null)
                     .execute();
             return true;
         } catch (ApiException | ClientException e) {

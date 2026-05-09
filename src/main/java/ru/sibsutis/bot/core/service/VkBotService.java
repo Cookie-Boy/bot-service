@@ -6,6 +6,7 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.messages.Message;
+import com.vk.api.sdk.objects.messages.responses.GetLongPollHistoryResponse;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class VkBotService {
     private final VkApiClient vk;
     private final GroupActor actor;
     private final Long groupId;
-    private final Double apiVersion;
+    private final String apiVersion;
     private final CommandDispatcher dispatcher;
     private final GlobalExceptionHandler exceptionHandler;
 
@@ -76,9 +77,16 @@ public class VkBotService {
     }
 
     private void pollLoop() {
+        String key;
         Integer ts;
+        Integer pts;
         try {
-            ts = vk.messages().getLongPollServer(actor).execute().getTs();
+            var serverResponse = vk.messages().getLongPollServer(actor)
+                    .needPts(true)
+                    .execute();
+            key = serverResponse.getKey();
+            ts = serverResponse.getTs();
+            pts = serverResponse.getPts();
         } catch (Exception e) {
             exceptionHandler.handle(e, "Getting initial long poll server");
             return;
@@ -87,22 +95,38 @@ public class VkBotService {
         while (running.get()) {
             try {
                 var response = vk.messages().getLongPollHistory(actor)
+                        .captchaKey(key)
                         .ts(ts)
+                        .pts(pts)
                         .execute();
 
-                List<Message> messages = response.getMessages().getItems();
-                if (messages != null) {
-                    for (Message msg : messages) {
-                        processMessage(msg);
+                if (response.getMessages() != null) {
+                    List<Message> messages = response.getMessages().getItems();
+                    if (messages != null) {
+                        for (Message msg : messages) {
+                            if (!msg.isOut()) {
+                                processMessage(msg);
+                            }
+                        }
                     }
                 }
 
-                ts = vk.messages().getLongPollServer(actor).execute().getTs();
+                pts = response.getNewPts();
+
+                if (response.getMessages() == null || response.getMessages().getItems().isEmpty()) {
+                    sleepSafe(300);
+                }
+
             } catch (Exception e) {
                 exceptionHandler.handle(e, "Long poll cycle");
-                sleepSafe(1_000);
+                sleepSafe(1000);
                 try {
-                    ts = vk.messages().getLongPollServer(actor).execute().getTs();
+                    var newServer = vk.messages().getLongPollServer(actor)
+                            .needPts(true)
+                            .execute();
+                    key = newServer.getKey();
+                    ts = newServer.getTs();
+                    pts = newServer.getPts();
                 } catch (Exception ex) {
                     exceptionHandler.handle(ex, "Reconnect to long poll");
                     return;

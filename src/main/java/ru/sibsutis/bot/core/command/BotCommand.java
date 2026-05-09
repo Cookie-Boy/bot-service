@@ -7,6 +7,6 @@ public interface BotCommand {
     void execute(VkMessage message);
 
     default boolean isStackable() {
-        return true; // По умолчанию все команды можно пушить
+        return true;
     }
 }

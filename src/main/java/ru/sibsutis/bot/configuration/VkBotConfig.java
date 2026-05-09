@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class VkBotConfig {
     private String token;
     private Long groupId;
-    private Double apiVersion;
+    private String apiVersion;
 
     @Bean
     public Map<String, String> userStorage() {
