@@ -20,6 +20,7 @@ public class CommandStack {
     @Autowired
     public void setMainMenuCommand(@Qualifier("mainMenuCommand") BotCommand mainMenu) {
         commands.push(mainMenu);
+        log.info("mainMenuCommand added to stack");
     }
 
     public void push(BotCommand command) {
