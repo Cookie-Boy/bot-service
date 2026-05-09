@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.core.command.BotCommand;
+import ru.sibsutis.bot.core.keyboard.KeyboardProvider;
 import ru.sibsutis.bot.core.model.VkMessage;
 import ru.sibsutis.bot.core.service.MessageSender;
 import ru.sibsutis.bot.core.service.VkAuthService;
@@ -31,7 +32,8 @@ public class StartCommand implements BotCommand {
                     ✅ Ваш аккаунт уже привязан к платформе.
                     Доступные команды:
                     /schedule – показать все записи
-                    /book – создать новую запись""");
+                    /book – создать новую запись""",
+                    KeyboardProvider.createMainKeyboard());
         } else {
             String link = vkAuthService.generateLinkToken(vkId);
             sender.send(vkId, """
