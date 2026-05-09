@@ -2,7 +2,6 @@ package ru.sibsutis.bot.core.command.common;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.core.command.BotCommand;
 import ru.sibsutis.bot.core.command.CommandList;
@@ -16,7 +15,7 @@ import ru.sibsutis.bot.core.service.MessageSender;
 public class BackCommand implements BotCommand {
 
     private final CommandStack stack;
-    @Lazy private final CommandList commands;
+    private final CommandList commands;
 
     @Override
     public String getCommandName() {
