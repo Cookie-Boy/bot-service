@@ -6,7 +6,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.sibsutis.bot.api.dto.OwnerDto;
+import ru.sibsutis.bot.api.dto.PetDto;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -32,7 +34,7 @@ public class ProfileServiceClient {
         }
     }
 
-    public Long getOwnerVkUserId(String petId) {
+    public Long getVkUserIdByPetId(String petId) {
         try {
             String token = tokenProvider.getFreshToken();
             return restClient.get()
@@ -45,6 +47,20 @@ public class ProfileServiceClient {
                     .body(new ParameterizedTypeReference<>() {});
         } catch (RuntimeException e) {
             log.error("Failed to send a request to profile-service (trying to fetch Vk User Id): {}", String.valueOf(e));
+            return null;
+        }
+    }
+
+    public List<PetDto> getPetsByVkUserId(Long vkUserId) {
+        try {
+            String token = tokenProvider.getFreshToken();
+            return restClient.get()
+                    .uri("api/profile/pets/vk-user-id/{vkUserId}", vkUserId)
+                    .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+        } catch (RuntimeException e) {
+            log.error("Failed to send a request to profile-service (trying to fetch pets by vkUserId): {}", String.valueOf(e));
             return null;
         }
     }

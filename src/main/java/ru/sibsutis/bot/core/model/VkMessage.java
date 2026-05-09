@@ -8,4 +8,5 @@ import lombok.Data;
 public class VkMessage {
     private Long userId;
     private String text;
+    private String payload;
 }

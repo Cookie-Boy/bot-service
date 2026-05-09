@@ -28,7 +28,7 @@ public class MqttProcessor {
         try {
             AnalysisResult result = objectMapper.readValue(payload, AnalysisResult.class);
 
-            Long vkUserId = externalGateway.getOwnerVkUserId(result.getPetId());
+            Long vkUserId = externalGateway.getVkUserIdByPetId(result.getPetId());
             String messageText = generateMessageText(result);
 
             vkMessageSender.send(vkUserId, messageText);

@@ -6,12 +6,9 @@ import java.util.UUID;
 
 public record AppointmentResponseDto(
         UUID id,
-        UUID clinicId,
-        String clinicName,       // Дополнительные данные для удобства
         UUID doctorId,
-        String doctorFullName,  // Дополнительные данные
-        UUID patientId,
-        String patientFullName, // Дополнительные данные
+        String ownerId,
+        String petId,
         LocalDateTime startTime,
         LocalDateTime endTime,
         String status,

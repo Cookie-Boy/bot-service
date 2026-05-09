@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public record AppointmentRequestDto(
-        UUID clinicId,
         UUID doctorId,
-        UUID patientId,
-        String telegramUsername,
+        String ownerId,
+        String petId,
+        String tgUserName,
         LocalDateTime startTime,
         LocalDateTime endTime,
         Map<String, Object> metadata

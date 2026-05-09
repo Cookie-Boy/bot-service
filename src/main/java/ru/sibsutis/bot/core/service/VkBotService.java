@@ -65,6 +65,7 @@ public class VkBotService {
                     .groupId(groupId)
                     .enabled(true)
                     .messageNew(true)
+                    .messageEvent(true)
                     .apiVersion(String.valueOf(apiVersion))
                     .execute();
         } catch (ApiException | ClientException e) {
@@ -86,12 +87,14 @@ public class VkBotService {
                 var response = vk.messages().getLongPollHistory(actor)
                         .ts(ts)
                         .execute();
+
                 List<Message> messages = response.getMessages().getItems();
                 if (messages != null) {
                     for (Message msg : messages) {
                         processMessage(msg);
                     }
                 }
+
                 ts = vk.messages().getLongPollServer(actor).execute().getTs();
             } catch (Exception e) {
                 exceptionHandler.handle(e, "Long poll cycle");
@@ -107,7 +110,7 @@ public class VkBotService {
     }
 
     private void processMessage(Message message) {
-        dispatcher.dispatch(new VkMessage(message.getFromId(), message.getText()));
+        dispatcher.dispatch(new VkMessage(message.getFromId(), message.getText(), message.getPayload()));
     }
 
     private void sleepSafe(long millis) {

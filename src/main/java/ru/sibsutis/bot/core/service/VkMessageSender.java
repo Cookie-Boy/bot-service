@@ -5,6 +5,7 @@ import com.vk.api.sdk.client.actors.GroupActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
+import com.vk.api.sdk.objects.messages.Keyboard;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.sibsutis.bot.configuration.VkBotConfig;
@@ -35,6 +36,37 @@ public class VkMessageSender implements MessageSender {
             return true;
         } catch (ApiException | ClientException e) {
             log.error("Failed to send message to user {}", userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean send(Long userId, Keyboard keyboard) {
+        try {
+            vk.messages().sendDeprecated(actor)
+                    .userId(userId)
+                    .randomId(random.nextInt())
+                    .keyboard(keyboard)
+                    .execute();
+            return true;
+        } catch (ApiException | ClientException e) {
+            log.error("Failed to send message to user {}", userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean send(Long userId, String text, Keyboard keyboard) {
+        try {
+            vk.messages().sendDeprecated(actor)
+                    .userId(userId)
+                    .message(text)
+                    .randomId(random.nextInt())
+                    .keyboard(keyboard)
+                    .execute();
+            return true;
+        } catch (ApiException | ClientException e) {
+            log.error("Failed to send message (with keyboard) to user {}", userId, e);
             return false;
         }
     }
