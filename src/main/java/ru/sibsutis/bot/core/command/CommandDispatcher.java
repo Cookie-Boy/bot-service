@@ -40,7 +40,7 @@ public class CommandDispatcher {
             return;
         }
 
-        String commandName = retrieveCommand(message.getPayload());
+        String commandName = "/start".equals(message.getText()) ? "/start" : retrieveCommand(message.getPayload());
 
         BotCommand cmd = commands.get(commandName);
         if (cmd != null) {

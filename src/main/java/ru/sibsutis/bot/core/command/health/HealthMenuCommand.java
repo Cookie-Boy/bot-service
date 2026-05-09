@@ -22,6 +22,8 @@ public class HealthMenuCommand implements BotCommand {
 
     @Override
     public void execute(VkMessage message) {
-        sender.send(message.getUserId(), KeyboardProvider.createHealthMenu());
+        sender.send(message.getUserId(),
+                "Выберите опцию",
+                KeyboardProvider.createHealthMenu());
     }
 }

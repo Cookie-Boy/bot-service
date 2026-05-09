@@ -22,6 +22,8 @@ public class ScheduleMenuCommand implements BotCommand {
 
     @Override
     public void execute(VkMessage message) {
-        sender.send(message.getUserId(), KeyboardProvider.createScheduleMenu());
+        sender.send(message.getUserId(),
+                "Выберите опцию",
+                KeyboardProvider.createScheduleMenu());
     }
 }

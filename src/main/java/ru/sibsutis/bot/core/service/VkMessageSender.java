@@ -41,21 +41,6 @@ public class VkMessageSender implements MessageSender {
     }
 
     @Override
-    public boolean send(Long userId, Keyboard keyboard) {
-        try {
-            vk.messages().sendDeprecated(actor)
-                    .userId(userId)
-                    .randomId(random.nextInt())
-                    .keyboard(keyboard)
-                    .execute();
-            return true;
-        } catch (ApiException | ClientException e) {
-            log.error("Failed to send message to user {}", userId, e);
-            return false;
-        }
-    }
-
-    @Override
     public boolean send(Long userId, String text, Keyboard keyboard) {
         try {
             vk.messages().sendDeprecated(actor)
