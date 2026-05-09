@@ -20,6 +20,11 @@ public class BackCommand implements BotCommand {
     }
 
     @Override
+    public boolean isStackable() {
+        return false;
+    }
+
+    @Override
     public void execute(VkMessage message) {
         BotCommand poppedCommand = stack.pop();
         log.info("Command '{}' popped", poppedCommand.getCommandName());

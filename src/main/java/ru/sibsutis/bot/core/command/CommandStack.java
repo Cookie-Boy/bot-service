@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.sibsutis.bot.core.command.common.BackCommand;
+import ru.sibsutis.bot.core.command.common.StartCommand;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -24,7 +26,9 @@ public class CommandStack {
     }
 
     public void push(BotCommand command) {
-        commands.push(command);
+        if (command.isStackable()) {
+            commands.push(command);
+        }
     }
 
     public BotCommand pop() {

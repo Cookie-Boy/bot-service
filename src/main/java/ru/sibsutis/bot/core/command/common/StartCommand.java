@@ -23,6 +23,11 @@ public class StartCommand implements BotCommand {
     }
 
     @Override
+    public boolean isStackable() {
+        return false;
+    }
+
+    @Override
     public void execute(VkMessage message) {
         Long vkId = message.getUserId();
         log.info("Start command from vkId={}", vkId);

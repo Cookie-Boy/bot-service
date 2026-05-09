@@ -21,6 +21,11 @@ public class MainMenuCommand implements BotCommand {
     }
 
     @Override
+    public boolean isStackable() {
+        return false;
+    }
+
+    @Override
     public void execute(VkMessage message) {
         sender.send(message.getUserId(),
                 "Выберите опцию",
