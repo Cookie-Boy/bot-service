@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.api.client.ExternalGateway;
 import ru.sibsutis.bot.api.dto.LatestPetResultDto;
 import ru.sibsutis.bot.api.dto.PetDto;
+import ru.sibsutis.bot.core.annotation.NonStackable;
 import ru.sibsutis.bot.core.command.BotCommand;
 import ru.sibsutis.bot.core.model.VkMessage;
 import ru.sibsutis.bot.core.service.MessageSender;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Component
+@NonStackable
 @RequiredArgsConstructor
 public class HealthCommand implements BotCommand {
 

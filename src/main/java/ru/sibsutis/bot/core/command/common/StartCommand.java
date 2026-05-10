@@ -31,10 +31,7 @@ public class StartCommand implements BotCommand {
 
         if (vkAuthService.isLinked(vkId)) {
             sender.send(vkId, """
-                    ✅ Ваш аккаунт уже привязан к платформе.
-                    Доступные команды:
-                    /schedule – показать все записи
-                    /book – создать новую запись""",
+                    ✅ Ваш аккаунт уже привязан к платформе!""",
                     KeyboardProvider.createMainKeyboard());
         } else {
             String link = vkAuthService.generateLinkToken(vkId);

@@ -2,6 +2,7 @@ package ru.sibsutis.bot.core.command;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -24,9 +25,14 @@ public class CommandStack {
     }
 
     public void push(BotCommand command) {
-        if (!command.getClass().isAnnotationPresent(NonStackable.class)) {
+        if (!isNonStackable(command)) {
             commands.push(command);
         }
+    }
+
+    private boolean isNonStackable(BotCommand command) {
+        Class<?> targetClass = AopUtils.getTargetClass(command);
+        return targetClass.isAnnotationPresent(NonStackable.class);
     }
 
     public BotCommand pop() {
