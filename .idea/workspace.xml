@@ -5,10 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="90846972-f86f-4d94-b624-87e8093200f0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/common/StartCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/common/StartCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/health/HealthCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/health/HealthCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/appointments/BookCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/appointments/CancelCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/appointments/ScheduleMenuCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/doctors/DoctorsCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/health/HealthAnalyzePeriodExecutor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/health/HealthAnalyzePeriodExecutor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/pets/PetsCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/pets/PetsCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/command/pets/PetsMenuCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/keyboard/KeyboardProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/sibsutis/bot/core/keyboard/KeyboardProvider.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
