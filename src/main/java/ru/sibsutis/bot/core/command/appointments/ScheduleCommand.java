@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.sibsutis.bot.api.client.ExternalGateway;
 import ru.sibsutis.bot.api.dto.AppointmentResponseDto;
 import ru.sibsutis.bot.api.dto.DoctorDto;
+import ru.sibsutis.bot.core.annotation.NonStackable;
 import ru.sibsutis.bot.core.command.BotCommand;
 import ru.sibsutis.bot.core.model.VkMessage;
 import ru.sibsutis.bot.core.service.MessageSender;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@NonStackable
 @RequiredArgsConstructor
 public class ScheduleCommand implements BotCommand {
 

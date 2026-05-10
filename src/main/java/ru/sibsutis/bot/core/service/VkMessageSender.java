@@ -32,6 +32,7 @@ public class VkMessageSender implements MessageSender {
                     .userId(userId)
                     .message(text)
                     .randomId(random.nextInt())
+                    .unsafeParam("parse", 1)
                     .execute();
             return true;
         } catch (ApiException | ClientException e) {
@@ -47,6 +48,7 @@ public class VkMessageSender implements MessageSender {
                     .userId(userId)
                     .message(text)
                     .randomId(random.nextInt())
+                    .unsafeParam("parse", 1)
                     .keyboard(keyboard)
                     .execute();
             return true;
