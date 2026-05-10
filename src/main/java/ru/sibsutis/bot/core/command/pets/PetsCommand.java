@@ -14,7 +14,6 @@ public class PetsCommand implements BotCommand {
     private final MessageSender sender;
     private final ExternalGateway externalGateway;
 
-
     @Override
     public String getCommandName() {
         return "/pets";

@@ -39,7 +39,7 @@ public class ProfileServiceClient {
             String token = tokenProvider.getFreshToken();
             return restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/api/profile/owner/vk-user-id")
+                            .path("/api/profile/owners/vk-user-id")
                             .queryParam("petId", petId)
                             .build())
                     .headers(httpHeaders -> httpHeaders.setBearerAuth(token))

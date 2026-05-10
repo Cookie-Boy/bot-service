@@ -35,7 +35,7 @@ public class HealthAnalyzePeriodExecutor {
 
         for (int i = 0; i < pets.size(); i++) {
             PetDto pet = pets.get(i);
-            RecommendationDto recommendation = externalGateway.getRecommendation(pet.getId(), period);
+            RecommendationDto recommendation = externalGateway.analyze(pet.getId(), period);
 
             if (recommendation != null) {
                 sb.append(formatRecommendation(pet, recommendation));

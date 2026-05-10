@@ -3,12 +3,14 @@ package ru.sibsutis.bot.core.command.common;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.sibsutis.bot.core.annotation.NonStackable;
 import ru.sibsutis.bot.core.command.BotCommand;
 import ru.sibsutis.bot.core.command.CommandStack;
 import ru.sibsutis.bot.core.model.VkMessage;
 
 @Slf4j
 @Component
+@NonStackable
 @RequiredArgsConstructor
 public class BackCommand implements BotCommand {
 
@@ -17,11 +19,6 @@ public class BackCommand implements BotCommand {
     @Override
     public String getCommandName() {
         return "/back";
-    }
-
-    @Override
-    public boolean isStackable() {
-        return false;
     }
 
     @Override

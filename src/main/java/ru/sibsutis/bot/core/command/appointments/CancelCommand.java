@@ -6,6 +6,7 @@ import ru.sibsutis.bot.api.client.ExternalGateway;
 import ru.sibsutis.bot.api.dto.AppointmentResponseDto;
 import ru.sibsutis.bot.api.dto.DoctorDto;
 import ru.sibsutis.bot.core.command.BotCommand;
+import ru.sibsutis.bot.core.keyboard.KeyboardProvider;
 import ru.sibsutis.bot.core.model.VkMessage;
 import ru.sibsutis.bot.core.service.MessageSender;
 
@@ -41,7 +42,9 @@ public class CancelCommand implements BotCommand {
         String schedule = appointments.stream()
                 .map(this::formatAppointment)
                 .collect(Collectors.joining("\n\n"));
-        sender.send(message.getUserId(), "Ваши записи:\n\n" + schedule);
+        sender.send(message.getUserId(),
+                "Ваши записи:\n\n" + schedule,
+                KeyboardProvider.createScheduleMenu());
     }
 
     private String formatAppointment(AppointmentResponseDto a) {

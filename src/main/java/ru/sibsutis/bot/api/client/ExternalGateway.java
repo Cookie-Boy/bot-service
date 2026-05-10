@@ -46,7 +46,7 @@ public class ExternalGateway {
         return healthServiceClient.getLatestVitals(petId);
     }
 
-    public RecommendationDto getRecommendation(String petId, String period) {
-        return healthServiceClient.getRecommendation(petId, period);
+    public RecommendationDto analyze(String petId, String period) {
+        return healthServiceClient.analyze(petId, period);
     }
 }

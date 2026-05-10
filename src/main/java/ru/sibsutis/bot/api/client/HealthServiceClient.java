@@ -6,10 +6,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.sibsutis.bot.api.dto.LatestPetResultDto;
-import ru.sibsutis.bot.api.dto.PetDto;
 import ru.sibsutis.bot.api.dto.RecommendationDto;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -33,10 +30,10 @@ public class HealthServiceClient {
         }
     }
 
-    public RecommendationDto getRecommendation(String petId, String period) {
+    public RecommendationDto analyze(String petId, String period) {
         try {
             String token = tokenProvider.getFreshToken();
-            return restClient.get()
+            return restClient.post()
                     .uri(uriBuilder -> uriBuilder
                             .path("api/health/analyze/{petId}")
                             .queryParam("period", period)

@@ -1,13 +1,11 @@
 package ru.sibsutis.bot.core.command;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.sibsutis.bot.core.command.common.BackCommand;
-import ru.sibsutis.bot.core.command.common.StartCommand;
+import ru.sibsutis.bot.core.annotation.NonStackable;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -26,7 +24,7 @@ public class CommandStack {
     }
 
     public void push(BotCommand command) {
-        if (command.isStackable()) {
+        if (!command.getClass().isAnnotationPresent(NonStackable.class)) {
             commands.push(command);
         }
     }
