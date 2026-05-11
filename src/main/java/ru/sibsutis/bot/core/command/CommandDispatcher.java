@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.sibsutis.bot.core.command.common.StartCommand;
 import ru.sibsutis.bot.core.exception.GlobalExceptionHandler;
 import ru.sibsutis.bot.core.keyboard.KeyboardProvider;
 import ru.sibsutis.bot.core.model.VkMessage;
@@ -37,15 +38,15 @@ public class CommandDispatcher {
     }
 
     public void dispatch(VkMessage message) {
-        if (!vkAuthService.isLinked(message.getUserId())) {
+        String commandName = "/start".equals(message.getText()) ? "/start" : retrieveCommand(message.getPayload());
+        BotCommand cmd = commands.get(commandName);
+
+        if (!vkAuthService.isLinked(message.getUserId()) && !(cmd instanceof StartCommand)) {
             sender.send(message.getUserId(),
                     "⛔ Ваш аккаунт ещё не привязан к личному кабинету. Используйте /start для привязки.");
             return;
         }
 
-        String commandName = "/start".equals(message.getText()) ? "/start" : retrieveCommand(message.getPayload());
-
-        BotCommand cmd = commands.get(commandName);
         if (cmd != null) {
             try {
                 stack.push(cmd);
