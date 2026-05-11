@@ -33,7 +33,7 @@ public class PetsCommand implements BotCommand {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("🐕 Мои питомцы\n\n");
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < pets.size(); i++) {
             PetDto pet = pets.get(i);

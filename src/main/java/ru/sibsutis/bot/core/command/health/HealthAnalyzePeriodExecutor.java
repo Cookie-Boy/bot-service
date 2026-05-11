@@ -28,7 +28,7 @@ public class HealthAnalyzePeriodExecutor {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("📋 Анализ здоровья</b>\n");
+        StringBuilder sb = new StringBuilder("📋 Анализ здоровья\n");
         sb.append(String.format("Период: %s\n\n", getPeriodDescription(period)));
 
         boolean hasAnyData = false;

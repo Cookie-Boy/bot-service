@@ -3,6 +3,7 @@ package ru.sibsutis.bot.core.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import ru.sibsutis.bot.core.model.AnalysisResult;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -21,6 +23,7 @@ public class MqttProcessor {
     private final ExternalGateway externalGateway;
     private final ObjectMapper objectMapper;
     private final MessageSender vkMessageSender;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @ServiceActivator(inputChannel = "mqttInboundChannel")
     public void handleVitalData(Message<String> message) {
@@ -30,6 +33,15 @@ public class MqttProcessor {
 
             Long vkUserId = externalGateway.getVkUserIdByPetId(result.getPetId());
             String messageText = generateMessageText(result);
+
+            String lockKey = "anomaly_notification:" + result.getPetId();
+            Boolean acquired = redisTemplate.opsForValue()
+                    .setIfAbsent(lockKey, "sent", 10, TimeUnit.MINUTES);
+
+            if (Boolean.FALSE.equals(acquired)) {
+                log.warn("Notification has already been sent (redis lock exists) for petId: {}", result.getPetId());
+                return;
+            }
 
             vkMessageSender.send(vkUserId, messageText);
 
@@ -94,7 +106,7 @@ public class MqttProcessor {
                 break;
         }
 
-        message.append("\n🤖 *Это автоматическое сообщение от системы мониторинга здоровья питомца.*");
+        message.append("\n🤖 Это автоматическое сообщение от системы мониторинга здоровья питомца.");
         message.append("\n⏰ Время обнаружения: ").append(formatTimestamp(result.getTimestamp()));
 
         return message.toString();
