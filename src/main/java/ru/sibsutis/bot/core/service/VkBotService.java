@@ -69,7 +69,7 @@ public class VkBotService {
                     .enabled(true)
                     .messageNew(true)
                     .messageEvent(true)
-                    .apiVersion(String.valueOf(apiVersion))
+                    .apiVersion(apiVersion)
                     .execute();
         } catch (ApiException | ClientException e) {
             throw new RuntimeException("Cannot register long poll settings", e);

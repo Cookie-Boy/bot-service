@@ -28,7 +28,7 @@ public class VkMessageSender implements MessageSender {
     @Override
     public boolean send(Long userId, String text) {
         try {
-            vk.messages().sendUserIds(actor)
+            vk.messages().sendDeprecated(actor)
                     .userId(userId)
                     .message(text)
                     .randomId(random.nextInt())
@@ -44,7 +44,7 @@ public class VkMessageSender implements MessageSender {
     @Override
     public boolean send(Long userId, String text, Keyboard keyboard) {
         try {
-            vk.messages().sendUserIds(actor)
+            vk.messages().sendDeprecated(actor)
                     .userId(userId)
                     .message(text)
                     .randomId(random.nextInt())

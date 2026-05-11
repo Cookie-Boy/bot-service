@@ -33,7 +33,7 @@ public class PetsCommand implements BotCommand {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("🐕 <b>Мои питомцы</b>\n\n");
+        StringBuilder sb = new StringBuilder("🐕 Мои питомцы\n\n");
 
         for (int i = 0; i < pets.size(); i++) {
             PetDto pet = pets.get(i);
@@ -49,7 +49,7 @@ public class PetsCommand implements BotCommand {
     private void formatPetInfo(StringBuilder sb, PetDto pet, int index) {
         // Эмодзи в зависимости от вида
         String speciesEmoji = getSpeciesEmoji(pet.getSpecies());
-        sb.append(String.format("%d. %s **%s**\n", index, speciesEmoji, pet.getName()));
+        sb.append(String.format("%d. %s %s\n", index, speciesEmoji, pet.getName()));
 
         if (pet.getBreed() != null && !pet.getBreed().isEmpty()) {
             sb.append(String.format("   🧬 Порода: %s\n", pet.getBreed()));

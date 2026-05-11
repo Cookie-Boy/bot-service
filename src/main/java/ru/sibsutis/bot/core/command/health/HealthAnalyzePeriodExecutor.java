@@ -28,7 +28,7 @@ public class HealthAnalyzePeriodExecutor {
             return;
         }
 
-        StringBuilder sb = new StringBuilder("📋 <b>Анализ здоровья</b>\n");
+        StringBuilder sb = new StringBuilder("📋 Анализ здоровья</b>\n");
         sb.append(String.format("Период: %s\n\n", getPeriodDescription(period)));
 
         boolean hasAnyData = false;
@@ -61,27 +61,23 @@ public class HealthAnalyzePeriodExecutor {
     private String formatRecommendation(PetDto pet, RecommendationDto rec) {
         StringBuilder sb = new StringBuilder();
 
-        // Заголовок с именем питомца
-        sb.append(String.format("🐶 **%s**", pet.getName()));
+        sb.append(String.format("🐶 %s", pet.getName()));
         if (pet.getBreed() != null && !pet.getBreed().isEmpty()) {
             sb.append(String.format(" (%s)", pet.getBreed()));
         }
         sb.append("\n");
 
-        // Дата генерации
         if (rec.getGeneratedAt() != null && !rec.getGeneratedAt().isEmpty()) {
             sb.append(String.format("📅 Сформировано: %s\n", rec.getGeneratedAt()));
         }
 
-        // Сводка
         if (rec.getSummary() != null && !rec.getSummary().isEmpty()) {
-            sb.append("\n📝 **Сводка:**\n");
+            sb.append("\n📝 Сводка:\n");
             sb.append(String.format("%s\n", rec.getSummary()));
         }
 
-        // Статистика
         if (rec.getStats() != null) {
-            sb.append("\n📊 **Статистика:**\n");
+            sb.append("\n📊 Статистика:\n");
             HealthStatsDto stats = rec.getStats();
 
             if (stats.getAvgHeartRate() != null) {
@@ -104,7 +100,7 @@ public class HealthAnalyzePeriodExecutor {
 
         // Рекомендации
         if (rec.getRecommendations() != null && !rec.getRecommendations().isEmpty()) {
-            sb.append("\n💡 **Рекомендации:**\n");
+            sb.append("\n💡 Рекомендации:\n");
             for (int i = 0; i < rec.getRecommendations().size(); i++) {
                 sb.append(String.format("   %d. %s\n", i + 1, rec.getRecommendations().get(i)));
             }
@@ -114,7 +110,7 @@ public class HealthAnalyzePeriodExecutor {
     }
 
     private String formatNoData(PetDto pet) {
-        return String.format("🐶 **%s**\n└─ Нет данных для анализа\n", pet.getName());
+        return String.format("🐶 %s\n└─ Нет данных для анализа\n", pet.getName());
     }
 
     private String getPeriodDescription(String period) {

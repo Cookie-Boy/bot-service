@@ -43,12 +43,12 @@ public class MqttProcessor {
     private String generateMessageText(AnalysisResult result) {
         StringBuilder message = new StringBuilder();
 
-        message.append("🚨 **ВНИМАНИЕ!** 🚨\n\n");
+        message.append("🚨 ВНИМАНИЕ! 🚨\n\n");
         message.append("Обнаружены аномальные показатели у вашего питомца!\n\n");
 
         switch (result.getAnomalyType()) {
             case ABNORMAL_HEART_RATE:
-                message.append("❤️ **Проблема с сердечным ритмом**\n");
+                message.append("❤️ Проблема с сердечным ритмом\n");
                 Object heartRate = result.getDetails().get("heartRate");
                 if (heartRate != null) {
                     message.append(String.format("Частота пульса: %.1f уд/мин\n", ((Number) heartRate).doubleValue()));
@@ -58,7 +58,7 @@ public class MqttProcessor {
                 break;
 
             case ABNORMAL_RESPIRATION:
-                message.append("🌬️ **Проблема с дыханием**\n");
+                message.append("🌬️ Проблема с дыханием\n");
                 Object respiration = result.getDetails().get("respiration");
                 if (respiration != null) {
                     message.append(String.format("Частота дыхания: %.1f вдохов/мин\n", ((Number) respiration).doubleValue()));
@@ -68,7 +68,7 @@ public class MqttProcessor {
                 break;
 
             case ABNORMAL_TEMPERATURE:
-                message.append("🌡️ **Проблема с температурой тела**\n");
+                message.append("🌡️ Проблема с температурой тела\n");
                 Object temperature = result.getDetails().get("temperature");
                 if (temperature != null) {
                     message.append(String.format("Температура тела: %.1f°C\n", ((Number) temperature).doubleValue()));
@@ -78,7 +78,7 @@ public class MqttProcessor {
                 break;
 
             case TOO_FAR_FROM_HOME:
-                message.append("📍 **Питомец убежал слишком далеко!**\n");
+                message.append("📍 Питомец убежал слишком далеко!\n");
                 Object distance = result.getDetails().get("distance");
                 if (distance != null) {
                     message.append(String.format("Расстояние от дома: %.0f м\n", ((Number) distance).doubleValue()));
@@ -88,7 +88,7 @@ public class MqttProcessor {
                 break;
 
             default:
-                message.append("❓ **Неизвестная аномалия**\n");
+                message.append("❓ Неизвестная аномалия\n");
                 message.append("⚠️ Обнаружены отклонения в показателях здоровья.\n");
                 message.append("📌 Рекомендация: обратитесь к ветеринару для обследования.\n");
                 break;
